@@ -58,7 +58,7 @@ def withdraw_rewards(daemon: str,
 
     for reward in response['rewards']:
         if reward['denom'] == denom:
-            rewards = int(reward['amount'])
+            rewards = int(float(reward['amount']))
             break
 
     logger.info(f"Available rewards: {rewards} {denom}")
