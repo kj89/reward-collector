@@ -73,7 +73,7 @@ def withdraw_rewards(daemon: str,
                   f"--fees {fees} " \
                   f"--output json " \
                   f"--gas auto " \
-                  f"--gas-adjustment 1.3" \
+                  f"--gas-adjustment 1.3 " \
                   f"--yes"
         logger.debug(f"Withdraw rewards: {command}")
         result = run(command, shell=True, capture_output=True, text=True)
