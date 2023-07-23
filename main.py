@@ -132,7 +132,7 @@ def transfer_to_osmosis(daemon: str,
 
 def main():
     for k, v in chains.items():
-        print(f'[{k}]')
+        print(f'[{k.capitalize()}]\n')
 
         # Withdraw rewards
         withdraw_rewards(daemon=v['daemon'],
