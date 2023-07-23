@@ -120,7 +120,7 @@ def transfer_to_osmosis(daemon: str,
                   f"--fees {fees} " \
                   f"--output json " \
                   f"--gas auto " \
-                  f"--gas-adjustment 1.3" \
+                  f"--gas-adjustment 1.3 " \
                   f"--yes"
         logger.debug(f"Transfer to Osmosis: {command}")
         logger.info(f"Transfer {withdrawal_amount} {denom} to {osmosis_address}...")
