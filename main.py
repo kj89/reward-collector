@@ -132,6 +132,8 @@ def transfer_to_osmosis(daemon: str,
 
 def main():
     for k, v in chains.items():
+        print(f'[{k}]')
+
         # Withdraw rewards
         withdraw_rewards(daemon=v['daemon'],
                          endpoint=v['endpoint'],
@@ -157,6 +159,10 @@ def main():
                             balance_threshold=v['balance_threshold'],
                             ibc_channel=v['ibc_channel'],
                             osmosis_address=v['osmosis_address'])
+
+        print('')
+        print('='*100)
+        print('')
 
 
 if __name__ == '__main__':
