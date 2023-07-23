@@ -54,7 +54,12 @@ def withdraw_rewards(daemon: str,
         return None
 
     response = json.loads(result.stdout)
-    rewards = int(float(response['rewards'][0]['amount']))
+    rewards = 0
+
+    for reward in response['rewards']:
+        if reward['denom'] == denom:
+            rewards = int(reward['amount'])
+            break
 
     logger.info(f"Available rewards: {rewards} {denom}")
 
