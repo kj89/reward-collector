@@ -72,6 +72,7 @@ def withdraw_rewards(daemon: str,
                   f"--node {endpoint} " \
                   f"--fees {fees} " \
                   f"--output json " \
+                  f"--gas auto " \
                   f"--yes"
         logger.debug(f"Withdraw rewards: {command}")
         result = run(command, shell=True, capture_output=True, text=True)
@@ -117,6 +118,7 @@ def transfer_to_osmosis(daemon: str,
                   f"--node {endpoint} " \
                   f"--fees {fees} " \
                   f"--output json " \
+                  f"--gas auto " \
                   f"--yes"
         logger.debug(f"Transfer to Osmosis: {command}")
         logger.info(f"Transfer {withdrawal_amount} {denom} to {osmosis_address}...")
