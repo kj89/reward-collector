@@ -186,7 +186,7 @@ def swap_to_usdc(daemon: str,
 
         estimated_usdc = int(json.loads(result.stdout)['token_out_amount'])
         price = round(estimated_usdc/balance, 4)
-        logger.info(f"Estimated price: ${price} per {chains[key_name]['denom']}")
+        logger.info(f"Estimated token price: ${price}")
 
         # Swap-exact-amount-in USDC
         command = f"echo {password} | {BIN_DIR}{daemon} tx poolmanager swap-exact-amount-in " \
@@ -200,8 +200,7 @@ def swap_to_usdc(daemon: str,
                   f"--yes " \
                   f"--output json"
         logger.debug(f"Swap Exact Amount In USDC: {command}")
-        logger.info(f"Swap: {round(balance/1_000_000, 2)}{chains[key_name]['denom']} "
-                    f"to {round(estimated_usdc/1_000_000, 2)}usdc")
+        logger.info(f"Swap: {balance} {chains[key_name]['denom']} to {round(estimated_usdc/1_000_000, 2)} usdc")
         result = run(command, shell=True, capture_output=True, text=True)
 
         # Cooldown after submitting transaction
