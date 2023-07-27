@@ -1,8 +1,9 @@
 import json
 import logging
+from time import sleep
 
 from subprocess import run
-from config import chains, osmosis_endpoint
+from config import chains, osmosis_endpoint, cooldown
 
 BIN_DIR = "/usr/local/bin/"
 
@@ -78,6 +79,9 @@ def withdraw_rewards(daemon: str,
         logger.debug(f"Withdraw rewards: {command}")
         result = run(command, shell=True, capture_output=True, text=True)
 
+        # Cooldown after submitting transaction
+        sleep(cooldown)
+
         if result.returncode == 1:
             logger.info(f"Withdraw rewards: Failed!")
             return None
@@ -125,6 +129,9 @@ def transfer_to_osmosis(daemon: str,
         logger.debug(f"Transfer to Osmosis: {command}")
         logger.info(f"Transfer {withdrawal_amount} {denom} to {osmosis_address}...")
         result = run(command, shell=True, capture_output=True, text=True)
+
+        # Cooldown after submitting transaction
+        sleep(cooldown)
 
         if result.returncode == 1:
             logger.info(f"Transfer to Osmosis: Failed!")
@@ -189,6 +196,9 @@ def swap_to_usdc(daemon: str,
         logger.debug(f"Swap Exact Amount In USDC: {command}")
         logger.info(f"Swapping {balance}{denom} to {estimated_usdc}{routes[-1]['token_out_denom']}...")
         result = run(command, shell=True, capture_output=True, text=True)
+
+        # Cooldown after submitting transaction
+        sleep(cooldown)
 
         if result.returncode == 1:
             logger.info(f"Swap Exact Amount In USDC: Failed!")

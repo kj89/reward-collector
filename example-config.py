@@ -1,3 +1,4 @@
+# List of chain parameters
 chains = {
     'agoric': {
         'daemon': 'agd',
@@ -22,4 +23,9 @@ chains = {
         ]
     }
 }
+
+# Endpoint to osmosis rpc
 osmosis_endpoint = 'https://osmosis.rpc.kjnodes.com:443'
+
+# Cooldown after transmitting transaction
+cooldown = 10
