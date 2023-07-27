@@ -2,7 +2,7 @@ import json
 import logging
 
 from subprocess import run
-from config import chains
+from config import chains, osmosis_endpoint
 
 BIN_DIR = "/usr/local/bin/"
 
@@ -139,6 +139,70 @@ def transfer_to_osmosis(daemon: str,
         return None
 
 
+# First get the token balance on Osmosis. If the balance is more than the threshold, then make swap-exact-amount to USDC
+def swap_to_usdc(daemon: str,
+                 endpoint: str,
+                 wallet_address: str,
+                 denom: str,
+                 balance_threshold: int,
+                 password: str,
+                 routes: list,
+                 chain_id: str,
+                 key_name: str,
+                 fees: str):
+
+    # Get token balance
+    balance = get_balance(daemon=daemon,
+                          endpoint=endpoint,
+                          wallet_address=wallet_address,
+                          denom=denom)
+
+    # Estimate Swap Exact Amount In USDC
+    if balance >= balance_threshold:
+        command = f"echo {password} | {BIN_DIR}{daemon} query poolmanager estimate-swap-exact-amount-in " \
+                  f"{routes[0]['pool_id']} {wallet_address} {balance}{denom} " \
+                  f"--swap-route-pool-ids {','.join([str(x['pool_id']) for x in routes])} " \
+                  f"--swap-route-denoms {','.join([str(x['token_out_denom']) for x in routes])} " \
+                  f"--node {endpoint} " \
+                  f"--output json"
+        logger.debug(f"Estimate Swap Exact Amount In USDC: {command}")
+        result = run(command, shell=True, capture_output=True, text=True)
+
+        if result.returncode == 1:
+            logger.info(f"Estimate Swap Exact Amount In USDC: Failed!")
+            return None
+
+        estimated_usdc = json.loads(result.stdout)['token_out_amount']
+        logger.info(f"Estimated {balance}{denom} to {estimated_usdc}{routes[-1]['token_out_denom']}...")
+
+        # Swap-exact-amount-in USDC
+        command = f"echo {password} | {BIN_DIR}{daemon} tx poolmanager swap-exact-amount-in " \
+                  f"{balance}{denom} {estimated_usdc} " \
+                  f"--swap-route-pool-ids {','.join([str(x['pool_id']) for x in routes])} " \
+                  f"--swap-route-denoms {','.join([str(x['token_out_denom']) for x in routes])} " \
+                  f"--node {endpoint} " \
+                  f"--from {key_name} " \
+                  f"--chain-id {chain_id} " \
+                  f"--fees {fees} " \
+                  f"--yes " \
+                  f"--output json"
+        logger.debug(f"Swap Exact Amount In USDC: {command}")
+        logger.info(f"Swapping {balance}{denom} to {estimated_usdc}{routes[-1]['token_out_denom']}...")
+        result = run(command, shell=True, capture_output=True, text=True)
+
+        if result.returncode == 1:
+            logger.info(f"Swap Exact Amount In USDC: Failed!")
+            return None
+
+        response = json.loads(result.stdout)
+        print(response)
+        return response
+
+    else:
+        logger.info(f"Balance did not reach threshold! ({balance_threshold} {denom})")
+        return None
+
+
 def main():
     for k, v in chains.items():
         print(f'[{k.upper()}]\n')
@@ -168,6 +232,19 @@ def main():
                             balance_threshold=v['balance_threshold'],
                             ibc_channel=v['ibc_channel'],
                             osmosis_address=v['osmosis_address'])
+
+        # Swap exact amount in USDC
+        swap_to_usdc(daemon='osmosisd',
+                     endpoint=osmosis_endpoint,
+                     wallet_address=v['osmosis_address'],
+                     denom=v['osmosis_denom'],
+                     balance_threshold=v['balance_threshold'],
+                     password=v['password'],
+                     routes=v['routes'],
+                     chain_id='osmosis-1',
+                     key_name=k,
+                     fees='1000uosmo'
+                     )
 
         print('')
         print('='*100)
