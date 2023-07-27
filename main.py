@@ -165,6 +165,7 @@ def swap_to_usdc(daemon: str,
     # Get token balance
     balance = get_balance(daemon=daemon,
                           endpoint=endpoint,
+                          wallet_address=wallet_address,
                           denom=denom)
 
     # Estimate Swap Exact Amount In USDC
@@ -251,13 +252,15 @@ def main():
         # Swap exact amount in USDC
         swap_to_usdc(daemon='osmosisd',
                      endpoint=osmosis_endpoint,
+                     wallet_address=v['osmosis_address'],
                      denom=v['osmosis_denom'],
                      balance_threshold=v['balance_threshold'],
                      password=v['password'],
                      routes=v['routes'],
                      chain_id='osmosis-1',
                      key_name=k,
-                     fees='1000uosmo')
+                     fees='1000uosmo'
+                     )
 
         print('')
         print('='*100)
