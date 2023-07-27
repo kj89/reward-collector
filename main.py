@@ -21,6 +21,7 @@ def get_balance(daemon: str, endpoint: str, wallet_address: str, denom: str):
 
     if result.returncode == 1:
         logger.info(f"Get balance: Failed!")
+        logger.info(command)
         return None
 
     response = json.loads(result.stdout)
@@ -52,6 +53,7 @@ def withdraw_rewards(daemon: str,
 
     if result.returncode == 1:
         logger.info(f"Get rewards: Failed!")
+        logger.info(command)
         return None
 
     response = json.loads(result.stdout)
@@ -84,6 +86,7 @@ def withdraw_rewards(daemon: str,
 
         if result.returncode == 1:
             logger.info(f"Withdraw rewards: Failed!")
+            logger.info(command)
             return None
 
         response = json.loads(result.stdout)
@@ -131,10 +134,11 @@ def transfer_to_osmosis(daemon: str,
         result = run(command, shell=True, capture_output=True, text=True)
 
         # Cooldown after submitting transaction
-        sleep(cooldown)
+        sleep(cooldown*2)
 
         if result.returncode == 1:
             logger.info(f"Transfer to Osmosis: Failed!")
+            logger.info(command)
             return None
 
         response = json.loads(result.stdout)
