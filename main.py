@@ -181,6 +181,7 @@ def swap_to_usdc(daemon: str,
 
         if result.returncode == 1:
             logger.info(f"Estimate Swap Exact Amount In USDC: Failed!")
+            logger.info(command)
             return None
 
         estimated_usdc = json.loads(result.stdout)['token_out_amount']
@@ -206,6 +207,7 @@ def swap_to_usdc(daemon: str,
 
         if result.returncode == 1:
             logger.info(f"Swap Exact Amount In USDC: Failed!")
+            logger.info(command)
             return None
 
         response = json.loads(result.stdout)
