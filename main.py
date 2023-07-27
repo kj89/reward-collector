@@ -184,7 +184,7 @@ def swap_to_usdc(daemon: str,
             logger.info(command)
             return None
 
-        estimated_usdc = json.loads(result.stdout)['token_out_amount']
+        estimated_usdc = int(json.loads(result.stdout)['token_out_amount'])
         logger.info(f"Estimated price: ${round(estimated_usdc/balance, 4)} per {chains[key_name]['denom']}")
 
         # Swap-exact-amount-in USDC
